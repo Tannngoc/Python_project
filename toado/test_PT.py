@@ -1,7 +1,9 @@
 import cv2
 import dlib
 import time
+import os
 
+# Khai báo model nhận diện khuôn mặt
 net = cv2.dnn.readNetFromCaffe(
     './models/deploy.prototxt.txt',
     './models/res10_300x300_ssd_iter_140000_fp16.caffemodel'
@@ -12,7 +14,26 @@ predictor = dlib.shape_predictor('./models/shape_predictor_68_face_landmarks.dat
 
 cap = cv2.VideoCapture(0)
 
+# Đường dẫn lưu file tọa độ
+os.makedirs("./toado", exist_ok=True)
+file1_path = "./toado/anh1.txt"
+file2_path = "./toado/anh2.txt"
+
+# Xác định file cần lưu
+if not os.path.exists(file1_path):
+    save_path = file1_path
+    print("Saving to anh1.txt")
+elif not os.path.exists(file2_path):
+    save_path = file2_path
+    print("Saving to anh2.txt")
+else:
+    print("Both files already exist. Exiting...")
+    cap.release()
+    cv2.destroyAllWindows()
+    exit()
+
 start_time = time.time()
+all_face_landmarks = []
 
 while True:
     ret, frame = cap.read()
@@ -26,7 +47,6 @@ while True:
     faces = net.forward()
 
     h, w = frame.shape[:2]
-    all_face_landmarks = []
 
     for i in range(0, faces.shape[2]):
         confidence = faces[0, 0, i, 2]
@@ -60,16 +80,20 @@ while True:
 
     cv2.imshow('Result', frame)
 
-    #Cam sẽ tự động tắt sau 10s, có thể chỉnh lại theo ý muốn của thầy
+    # Camera sẽ tự động tắt sau 10 giây
     if time.time() - start_time > 10:
-        print("Finished after 10 seconds.")
+        print(f"Finished after 10 seconds. Saving to {save_path}")
 
-        #Đổi tên file thành anh2.txt để xác thực với file anh1.txt khi chạy lần 2
-        with open("./Team_Project/toado/anh1.txt", "w") as file:
-            for landmarks in all_face_landmarks:
-                for x, y in landmarks:
-                    file.write(f"{x},{y}\n")
-        print("Saved coordinates to toado folder")
+        # Lưu tọa độ khuôn mặt vào file
+        with open(save_path, "w") as file:
+            if not all_face_landmarks:  # Kiểm tra nếu không có khuôn mặt nào được nhận diện
+                print("No face detected, skipping file save.")
+            else:
+                for landmarks in all_face_landmarks:
+                    for x, y in landmarks:
+                        file.write(f"{x},{y}\n")
+                print(f"Saved coordinates to {save_path}")
+
         cv2.imshow('Result', frame)
         cv2.waitKey(3000)
         break

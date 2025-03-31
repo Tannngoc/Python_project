@@ -1,6 +1,6 @@
 # Đọc dữ liệu từ file 1 và file 2
-file1_path = './Team_Project/toado/anh1.txt'
-file2_path = './Team_Project/toado/anh2.txt'
+file1_path = './toado/anh1.txt'
+file2_path = './toado/anh2.txt'
 
 file1_coords = []
 file2_coords = []
@@ -36,13 +36,13 @@ for i in range(num_points):
 avg_diff_x = diff_x_sum / num_points
 avg_diff_y = diff_y_sum / num_points
 
-print(f"Mốc trung bình hiệu x: {avg_diff_x}")
-print(f"Mốc trung bình hiệu y: {avg_diff_y}")
+print(f"Average mark x: {avg_diff_x}")
+print(f"Average mark y: {avg_diff_y}")
 
-threshold = 5.0  # Đây là giá trị ngưỡng để xác thực
+threshold = 5.0  # Giá trị ngưỡng để xác thực
 
 # Xác thực
 if abs(avg_diff_x) < threshold and abs(avg_diff_y) < threshold:
-    print("Xác thực thành công: Hai khuôn mặt tương đồng.")
+    print("✅ Authentication successful: Two faces match!")
 else:
-    print("Xác thực không thành công: Hai khuôn mặt khác nhau.")
+    print("❌ Authentication failed: Two different faces!")
